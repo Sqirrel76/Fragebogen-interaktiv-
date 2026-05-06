@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persönlichkeitstypen - Fragebogen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sage: #84B59F;
+            --eucalyptus: #69A297;
+            --slate: #50808E;
+            --cream: #F5F5F5;
+            --white: #FFFFFF;
+            --schizoid: #6B5B95;
+            --depressiv: #88B0D3;
+            --zwanghaft: #F39C12;
+            --hysterisch: #E74C3C;
+        }
+
+        body {
+            font-family: 'Calibri', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--sage) 0%, var(--eucalyptus) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* INTRO SCREEN */
+        .intro-screen {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 600px;
+        }
+
+        .intro-screen h1 {
+            color: var(--sage);
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-family: Georgia, serif;
+        }
+
+        .intro-screen p {
+            color: var(--slate);
+            font-size: 18px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .intro-screen ul {
+            text-align: left;
+            margin: 30px auto;
+            color: var(--slate);
+            font-size: 16px;
+            list-style: none;
+            display: inline-block;
+        }
+
+        .intro-screen li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .intro-screen li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--eucalyptus);
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .start-button {
+            background: var(--sage);
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 40px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .start-button:hover {
+            background: var(--eucalyptus);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        /* QUIZ SCREEN */
+        .quiz-screen {
+            display: none;
+        }
+
+        .quiz-header {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 12px 12px 0 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--eucalyptus);
+            transition: width 0.3s ease;
+        }
+
+        .scenario-number {
+            color: var(--eucalyptus);
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .quiz-header h2 {
+            color: var(--sage);
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-family: Georgia, serif;
+        }
+
+        .quiz-question {
+            color: var(--slate);
+            font-size: 16px;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .quiz-content {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .answers-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .answer-button {
+            background: var(--cream);
+            border: 2px solid #ddd;
+            padding: 20px;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            color: var(--slate);
+            line-height: 1.5;
+        }
+
+        .answer-button:hover {
+            border-color: var(--eucalyptus);
+            background: #f0f8f6;
+            transform: translateX(5px);
+        }
+
+        .answer-button.selected {
+            background: var(--eucalyptus);
+            color: white;
+            border-color: var(--eucalyptus);
+        }
+
+        .answer-label {
+            font-weight: bold;
+            margin-right: 10px;
+            display: inline-block;
+            min-width: 30px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: space-between;
+        }
+
+        .nav-button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .prev-button {
+            background: #ccc;
+            color: white;
+        }
+
+        .prev-button:hover {
+            background: #aaa;
+        }
+
+        .next-button {
+            background: var(--sage);
+            color: white;
+        }
+
+        .next-button:hover {
+            background: var(--eucalyptus);
+        }
+
+        .next-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* RESULT SCREEN */
+        .result-screen {
+            display: none;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 50px 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .result-header h1 {
+            font-size: 52px;
+            font-family: Georgia, serif;
+            margin-bottom: 20px;
+        }
+
+        .type-name {
+            font-size: 44px;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .type-name.schizoid { background: var(--schizoid); }
+        .type-name.depressiv { background: var(--depressiv); }
+        .type-name.zwanghaft { background: var(--zwanghaft); }
+        .type-name.hysterisch { background: var(--hysterisch); }
+
+        .grundangst {
+            font-size: 18px;
+            color: var(--slate);
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        .result-content {
+            display: grid;
+            gap: 30px;
+        }
+
+        .result-section {
+            border-left: 4px solid var(--eucalyptus);
+            padding-left: 20px;
+        }
+
+        .result-section h3 {
+            color: var(--sage);
+            font-size: 18px;
+            margin-bottom: 12px;
+            font-family: Georgia, serif;
+        }
+
+        .result-section p {
+            color: var(--slate);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .restart-button {
+            background: var(--sage);
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 40px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .restart-button:hover {
+            background: var(--eucalyptus);
+            transform: translateY(-2px);
+        }
+
+        .score-display {
+            background: var(--cream);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .score-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .score-value {
+            font-size: 28px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 6px;
+            color: white;
+        }
+
+        .score-value.a { background: var(--schizoid); }
+        .score-value.b { background: var(--depressiv); }
+        .score-value.c { background: var(--zwanghaft); }
+        .score-value.d { background: var(--hysterisch); }
+
+        @media (max-width: 768px) {
+            .intro-screen,
+            .result-screen {
+                padding: 30px 20px;
+            }
+
+            .quiz-content {
+                padding: 20px;
+            }
+
+            .answer-button {
+                padding: 15px;
+                font-size: 14px;
+            }
+
+            .type-name {
+                font-size: 32px;
+            }
+
+            .result-header h1 {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- INTRO -->
+        <div class="intro-screen" id="introScreen">
+            <h1>Die vier Grundängste</h1>
+            <p>Entdecke deinen Persönlichkeitstyp</p>
+            <p style="margin-top: 30px;">Mit diesem Fragebogen lernst du:</p>
+            <ul>
+                <li>Welche Grundangst dich prägt</li>
+                <li>Wie du typischerweise auf Druck reagierst</li>
+                <li>Was dir hilft, dich sicher zu fühlen</li>
+                <li>Wie du dich selbst besser verstehen kannst</li>
+            </ul>
+            <button class="start-button" onclick="startQuiz()">Jetzt starten</button>
+        </div>
+
+        <!-- QUIZ -->
+        <div class="quiz-screen" id="quizScreen">
+            <div class="quiz-header">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="scenario-number" id="scenarioNumber">Szenario 1 / 8</div>
+                <h2 id="scenarioTitle">Szenario Titel</h2>
+                <p class="quiz-question" id="scenarioQuestion">Frage</p>
+            </div>
+            <div class="quiz-content">
+                <div class="answers-grid" id="answersGrid"></div>
+                <div class="nav-buttons">
+                    <button class="nav-button prev-button" onclick="previousScenario()" id="prevBtn" style="visibility: hidden;">← Zurück</button>
+                    <button class="nav-button next-button" onclick="nextScenario()" id="nextBtn" disabled>Weiter →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="result-screen" id="resultScreen">
+            <div class="result-header">
+                <h1>Dein Ergebnis</h1>
+                <div class="score-display">
+                    <p style="color: var(--slate); margin-bottom: 15px;">Deine Antwort-Verteilung:</p>
+                    <div class="score-bar">
+                        <div class="score-item">
+                            <div class="score-label">A</div>
+                            <div class="score-value a" id="scoreA">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">B</div>
+                            <div class="score-value b" id="scoreB">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">C</div>
+                            <div class="score-value c" id="scoreC">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">D</div>
+                            <div class="score-value d" id="scoreD">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="type-name" id="typeName"></div>
+                <p class="grundangst" id="grundangst"></p>
+            </div>
+
+            <div class="result-content" id="resultContent"></div>
+
+            <button class="restart-button" onclick="restartQuiz()">Nochmal machen</button>
+        </div>
+    </div>
+
+    <script>
+        const szenarien = [
+            {
+                titel: 'SZENARIO 1: Team-Projekt',
+                frage: 'Dein Partner im Projekt macht wenig, du merkst es.',
+                antworten: [
+                    { buchstabe: 'A', text: 'Ich ziehe mich zurück, mache das allein, rede nicht viel drüber' },
+                    { buchstabe: 'B', text: 'Ich mache mir Vorwürfe, dass ich nicht besser kommuniziert habe; ich übernehme mehr' },
+                    { buchstabe: 'C', text: 'Ich organisiere ein Treffen, setze klare Regeln und Deadlines' },
+                    { buchstabe: 'D', text: 'Ich spreche laut an, dass ich ungerecht behandelt werde, dramatisiere es etwas' }
+                ]
+            },
+            {
+                titel: 'SZENARIO 2: Kritik von der Lehrerin',
+                frage: 'Lehrerin kritisiert deine Arbeit im Unterricht.',
+                antworten: [
+                    { buchstabe: 'A', text: 'Ich nehme es persönlich, bin verletzt, ziehe mich zurück' },
+                    { buchstabe: 'B', text: 'Ich glaube, sie hat recht, ich bin wirklich nicht gut genug' },
+                    { buchstabe: 'C', text: 'Ich überlege rational, was ich besser machen kann; ich plane Verbesserungen' },
+                    { buchstabe: 'D', text: 'Ich will sofort zeigen, dass ich doch gut bin; ich hole mir Bestätigung von Freunden' }
+                ]
+            },
+            {
+                titel: 'SZENARIO 3: Spontanes Treffen',
+                frage: 'Freunde laden dich spontan auf ein Treffen ein.',
+                antworten: [
+                    { buchstabe: 'A', text: 'Ich sage ab, ich brauche Zeit für mich' },
+                    { buchstabe: 'B', text: 'Ich gehe hin, aber fühle mich später schuldig, dass ich nicht genug beigetragen habe' },
+                    { buchstabe: 'C', text: 'Ich komme gerne, aber ich plane lieber vorher, was wir machen' },
+                    { buchstabe: 'D', text: 'Ich bin begeistert, bin das Zentrum, improvisiere alles' }
+                ]
+            },
+            {
+                titel: 'SZENARIO 4: Zu viele Anforderungen',
+                frage: 'Es wird chaotisch — zu viele Anforderungen gleichzeitig.',
+                antworten: [
+                    { buchstabe: 'A', text: 'Ich isoliere mich, rede nicht drüber' },
+                    { buchstabe: 'B', text: 'Ich gebe auf, denke „ist sowieso egal"' },
+                    { buchstabe: 'C', text: 'Ich erstelle Listen, Pläne, alles wird strukturiert' },
+                    { buchstabe: 'D', text: 'Ich werde emotional, suche Unterstützung und Aufmerksamkeit' }
+                ]
+            },
+            {
+                titel: 'SZENARIO 5: Social Media',
+                frage: 'Dein Post bekommt wenig Likes/Kommentare.',
+                antworten: [
+                    { buchstabe: 'A', text: 'Mir ist egal, ob mein Post bemerkt wird; ich poste selten ohnehin' },
+                    { buchstabe: 'B', text: 'Ich denke, es ist meine Schuld; mein Post war wohl nicht gut genug' },
+                    { buchstabe: 'C', text: 'Ich analysiere, was ich besser hätte machen können; nächstes Mal besser geplant' },
+                    { buchstabe: 'D', text: 'Ich fühle mich ignoriert und gekränkt; ich poste bald wieder, um Aufmerksamkeit zu bekommen' }
+                ]
+            },
+            {
+                titel: 'SZENARIO 6: Eltern fragen',
+                frage: 'Eltern fragen dich, wie es in der Schule läuft.',
+                antworten: [
+                    { buchstabe: 'A', text: 'Ich antworte kurz, möchte nicht viel über mich sprechen; ich ziehe mich auf mein Zimmer zurück' },
+                    { buchstabe: 'B', text: 'Ich erzähle alles; ich suche heimlich nach ihrer Bestätigung, obwohl ich denke, sie sind enttäuscht' },
+                    { buchstabe: 'C', text: 'Ich beantworte die Fragen strukturiert und sachlich; ich habe einen Plan zur Verbesserung' },
+                    { buchstabe: 'D', text: 'Ich erzähle dramatisch und emotional; ich brauche ihre Aufmerksamkeit und ihr Mitgefühl' }
+                ]
+            },
+            {
+                titel: 'SZENARIO 7: Andere lachen über dich',
+                frage: 'In der Pause merkst du, dass andere über dich lachen.',
+                antworten: [
+                    { buchstabe: 'A', text: 'Ich bleibe anonym, rede nicht mit ihnen; ich gehe allein wo anders hin' },
+                    { buchstabe: 'B', text: 'Ich denke, es ist verdient; ich bin wohl wirklich komisch/blöd' },
+                    { buchstabe: 'C', text: 'Ich überprüfe rational, ob es berechtigt ist; ich plane, wie ich das ändern kann' },
+                    { buchstabe: 'D', text: 'Ich fühle mich verletzt und ungerecht behandelt; ich will, dass alle wissen, wie sehr das mir schadet' }
+                ]
+            },
+            {
+                titel: 'SZENARIO 8: Beste Freundin/Freund',
+                frage: 'Deine beste Freundin/Freund verbringt mehr Zeit mit jemand anderem.',
+                antworten: [
+                    { buchstabe: 'A', text: 'Ich bin erleichtert, dass ich wieder mehr Zeit für mich habe; mir ist nicht wohl mit so viel Nähe' },
+                    { buchstabe: 'B', text: 'Ich mache mir Vorwürfe, nicht „gut genug" als Freund zu sein; ich opfere mich mehr auf' },
+                    { buchstabe: 'C', text: 'Ich thematisiere das sachlich und kläre ab, wie oft wir uns sehen' },
+                    { buchstabe: 'D', text: 'Ich bin verletzt und dramatisiere das Drama; ich brauche sofort Bestätigung, dass mein Freund ungerecht ist' }
+                ]
+            }
+        ];
+
+        const typDescriptions = {
+            schizoid: {
+                name: 'SCHIZOID',
+                grundangst: 'Grundangst: Einsamkeit & Verschlungenwerden',
+                charakteristika: '• Zieht sich zurück, braucht viel Raum und Unabhängigkeit • Hat eine reiche innere Welt, aber kleine soziale Kontakte • Angst vor Nähe: "Wenn ich mich nähere, werde ich erdrückt" • Wirkt oft distanziert oder "andersartig" • Kann manipulativ sein, um Distanz zu wahren',
+                ursprung: 'Eltern waren oft intrusiv oder emotional kalt. Das Kind lernte: "Nähe = Gefahr" (Identitätsverlust). Distanz wurde zur Überlebensstrategie.',
+                inSchule: 'Wirkt distanziert, funktioniert gut allein, Gruppenarbeiten sind schwierig'
+            },
+            depressiv: {
+                name: 'DEPRESSIV',
+                grundangst: 'Grundangst: Mangel & Unwürdigkeit',
+                charakteristika: '• Macht sich Vorwürfe und fühlt sich schuldig • Unterschätzt eigene Leistungen, überschätzt Anforderungen • Überverantwortlich, opfert sich für andere auf • "Ich bin nicht genug" ist der Grundtonfall • Braucht externe Bestätigung, glaubt sich selbst nicht',
+                ursprung: 'Eltern waren oft selbst emotional bedürftig. Das Kind wurde zum emotionalen Versorger. Es lernte: "Meine Liebe = mein Opfer"',
+                inSchule: 'Arbeitet hart, unterschätzt Noten, kümmert sich um andere, vergisst sich selbst'
+            },
+            zwanghaft: {
+                name: 'ZWANGHAFT',
+                grundangst: 'Grundangst: Kontrollloss & Chaos',
+                charakteristika: '• Überbetonung von Kontrolle, Ordnung, Regeln, Rationalität • Perfektionistisch, details-fokussiert, schwierig bei Gefühlen • "Wenn ich nicht alles kontrolliere, passiert etwas Schlimmes" • Rigide, wenig spontan, innerlich angespannt • Kann Prokrastination als Widerstand zeigen',
+                ursprung: 'Eltern betonten Ordnung, Perfektionismus und Angst. Gefühle wurden als gefährlich angesehen. Das Kind lernte: "Kontrolle = Sicherheit"',
+                inSchule: 'Macht alles „richtig", perfektionistisch, aber oft blockiert durch Überdenken'
+            },
+            hysterisch: {
+                name: 'HYSTERISCH',
+                grundangst: 'Grundangst: Unbedeutsamkeit & Unsichtbarkeit',
+                charakteristika: '• Sucht Aufmerksamkeit, dramatisiert, theatralisch • Emotional lebendig, spontan, aber oft oberflächlich • "Ich muss bemerkt werden, sonst bin ich unsichtbar" • Manipulativ durch emotionale Appelle • Wechselhafte, intensive (aber kurzlebige) Reaktionen',
+                ursprung: 'Eltern waren emotional lebendig aber inkonsistent in Grenzen. Das Kind lernte: "Liebe = Aufmerksamkeit durch Drama"',
+                inSchule: 'Aktiv, präsent, charismatisch, aber unkonzentriert; braucht Bühne'
+            }
+        };
+
+        let currentScenario = 0;
+        let scores = { A: 0, B: 0, C: 0, D: 0 };
+        let selectedAnswers = new Array(8).fill(null);
+
+        function startQuiz() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            displayScenario();
+        }
+
+        function displayScenario() {
+            const scenario = szenarien[currentScenario];
+            document.getElementById('scenarioNumber').textContent = `Szenario ${currentScenario + 1} / 8`;
+            document.getElementById('scenarioTitle').textContent = scenario.titel;
+            document.getElementById('scenarioQuestion').textContent = scenario.frage;
+
+            const answersGrid = document.getElementById('answersGrid');
+            answersGrid.innerHTML = '';
+            scenario.antworten.forEach((answer) => {
+                const button = document.createElement('button');
+                button.className = 'answer-button';
+                button.innerHTML = `<span class="answer-label">${answer.buchstabe}:</span>${answer.text}`;
+                button.onclick = () => selectAnswer(answer.buchstabe, button);
+                if (selectedAnswers[currentScenario] === answer.buchstabe) {
+                    button.classList.add('selected');
+                }
+                answersGrid.appendChild(button);
+            });
+
+            // Update progress bar
+            const progress = ((currentScenario + 1) / 8) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            // Update buttons
+            document.getElementById('prevBtn').style.visibility = currentScenario > 0 ? 'visible' : 'hidden';
+            document.getElementById('nextBtn').disabled = selectedAnswers[currentScenario] === null;
+        }
+
+        function selectAnswer(buchstabe, buttonElement) {
+            // Remove previous selection
+            document.querySelectorAll('.answer-button').forEach(btn => btn.classList.remove('selected'));
+            buttonElement.classList.add('selected');
+            selectedAnswers[currentScenario] = buchstabe;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextScenario() {
+            if (currentScenario < szenarien.length - 1) {
+                currentScenario++;
+                displayScenario();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousScenario() {
+            if (currentScenario > 0) {
+                currentScenario--;
+                displayScenario();
+            }
+        }
+
+        function showResults() {
+            // Calculate scores
+            scores = { A: 0, B: 0, C: 0, D: 0 };
+            selectedAnswers.forEach(answer => {
+                if (answer) scores[answer]++;
+            });
+
+            // Determine type
+            const maxScore = Math.max(scores.A, scores.B, scores.C, scores.D);
+            const maxTypes = Object.keys(scores).filter(key => scores[key] === maxScore);
+
+            let type = '';
+            if (maxTypes.includes('A')) type = 'schizoid';
+            else if (maxTypes.includes('B')) type = 'depressiv';
+            else if (maxTypes.includes('C')) type = 'zwanghaft';
+            else if (maxTypes.includes('D')) type = 'hysterisch';
+
+            // Display results
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+
+            document.getElementById('scoreA').textContent = scores.A;
+            document.getElementById('scoreB').textContent = scores.B;
+            document.getElementById('scoreC').textContent = scores.C;
+            document.getElementById('scoreD').textContent = scores.D;
+
+            const typeDesc = typDescriptions[type];
+            document.getElementById('typeName').className = 'type-name ' + type;
+            document.getElementById('typeName').textContent = typeDesc.name;
+            document.getElementById('grundangst').textContent = typeDesc.grundangst;
+
+            const resultContent = document.getElementById('resultContent');
+            resultContent.innerHTML = `
+                <div class="result-section">
+                    <h3>Charakteristische Merkmale:</h3>
+                    <p>${typeDesc.charakteristika}</p>
+                </div>
+                <div class="result-section">
+                    <h3>Lebensgeschichtlicher Ursprung:</h3>
+                    <p><em>${typeDesc.ursprung}</em></p>
+                </div>
+                <div class="result-section">
+                    <h3>In der Schule:</h3>
+                    <p>${typeDesc.inSchule}</p>
+                </div>
+                <div class="result-section" style="border-color: var(--slate); margin-top: 30px; padding-top: 30px;">
+                    <h3 style="color: var(--slate);">Wichtig:</h3>
+                    <p style="font-style: italic;">Diese Typen sind KEINE Diagnosen oder Urteile. Sie sind adaptive Strategien, die in der Kindheit Sinn gemacht haben. Mit Selbstverständnis kannst du bewusst andere Wege wählen, wenn alte Muster nicht mehr hilfreich sind. Jeder Typ hat Stärken — nutze deine!</p>
+                </div>
+            `;
+        }
+
+        function restartQuiz() {
+            currentScenario = 0;
+            scores = { A: 0, B: 0, C: 0, D: 0 };
+            selectedAnswers = new Array(8).fill(null);
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('introScreen').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
